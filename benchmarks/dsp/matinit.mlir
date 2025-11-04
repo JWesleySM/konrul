@@ -1,0 +1,10 @@
+module {
+  func.func @matadd(%matA: memref<3x3xf64>, %val: f64) {
+    affine.for %i = 0 to 3 {
+        affine.for %j = 0 to 3 {
+            affine.store %val, %matA[%i, %j] : memref<3x3xf64>
+        }
+    }
+    return
+  }
+}
