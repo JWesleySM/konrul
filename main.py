@@ -26,8 +26,6 @@ def lift(original_program, io, original_mlir, n_iter):
 
   checker = Checker(os.path.join(os.path.dirname(original_program), 'candidate.c'), original_lists)
   checker.compute_score(initial_candidate)
-  search._print_similarities(initial_candidate)
-
   io_set = io_handler.parse_io(io)
   if checker.check(initial_candidate): 
     test_code, substitution = io_test.io_test(initial_candidate, io_set)

@@ -1,5 +1,6 @@
 import clang.cindex as clang
 
+clang.Config.set_library_file("./llvm/lib/libclang.so")
 LOOP_TYPES = [clang.CursorKind.FOR_STMT, clang.CursorKind.WHILE_STMT, clang.CursorKind.DO_STMT] 
 
 def _parse_program(program_path):

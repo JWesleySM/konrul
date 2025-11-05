@@ -130,7 +130,19 @@ def pytorch_gen(einsum_prog):
       pytorch_prog = _pytorch_extended_einsum_codegen(einsum_prog)
   return pytorch_prog
 
-  
 
+def taco_gen(einsum_prog):
+  def gen_taco_tensor(einsum_tensor):
+    taco_tensor = '-' + einsum_tensor.name if einsum_tensor.negated else einsum_tensor.name
+    taco_tensor = taco_tensor + '(' + einsum_tensor.indexing + ')' if einsum_tensor.order > 0 else taco_tensor
+    return taco_tensor
 
+  taco_prog = gen_taco_tensor(einsum_prog.lhs_tensor) + ' = '
+  if einsum_prog.n_tensors == 2:
+    return taco_prog + gen_taco_tensor(einsum_prog.rhs_tensors[0])
+  else:
+    for i in range(einsum_prog.n_arithops):
+      taco_prog += gen_taco_tensor(einsum_prog.rhs_tensors[i]) + ' ' + str(einsum_prog.arithops[i]) + ' '
+    taco_prog += gen_taco_tensor(einsum_prog.rhs_tensors[einsum_prog.n_tensors - 2])
+  return taco_prog
 
