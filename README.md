@@ -39,11 +39,51 @@ This will run KONRUL Docker image and leave you inside a container with all KONR
 
 ## Usage
 
-KONRUL takes as input the original program in C, the MLIR version of it, the set of tests (I/O samples) and the number of attempts to run the whole lifting pipeline.
+KONRUL takes as input the original program in C, the set of tests (I/O samples), the MLIR version of the input program, and the number of attempts to run the whole lifting pipeline.
 
 ```
-$ python3 main.py <path-to-c-program> <path-to-mlir-program> <path-to-IO-samples> <number-of-pipeline-iterations>
+$ python3 main.py <path-to-c-program> <path-to-IO-samples> <path-to-mlir-program> <number-of-pipeline-iterations>
 ```
+
+## Example
+
+Let's consider as example the DSP [matmul](https://github.com/JWesleySM/konrul/blob/main/benchmarks/dsp/matmul.c) benchmark:
+
+```c
+void matmul(int* matA, int* matB, int* matC, int m, int n, int p)
+{
+  for (int i = 0; i < m; ++i) {
+    for (int j = 0; j < p; ++j) {
+      matC[p * i + j] = 0;
+      for (int k = 0; k < n; ++k) {
+        matC[p * i + j] += matA[n * i + k] * matB[p * k + j];
+      }
+    }
+  }
+}
+```
+
+To run KONRUL with 3 attempts, simply do:
+
+```
+$ python3 main.py benchmarks/dsp/matmul.c benchmarks/dsp/matmul_io.json benchamrks/dsp/matmul.mlir 3
+```
+
+When successful, KONRUL outputs the lifted program in Einsum notation, PyTorch and some lifting statistics:
+
+```bash
+--------------------
+Answer: a:i,j = b:i,k * c:k,j
+Explored:  16
+Pick initial time:  1.972372055053711
+Searching time: 30.03658127784729
+Checking time: 1.0100433826446533
+Verification: True
+PyTorch: a = torch.einsum('ik,kj->ij', [b, c])
+
+```
+For matmul.c, the equivalent einsum program is `a:i,j = b:i,k * c:k,j` (Pytorch: `a = torch.einsum('ik,kj->ij', [b, c])`), where _a_, _b_, and _c_ are substituted by _MatA_, _MatB_, and _MatC_ respectively.
+
 ## Citation
 
 If you use KONRUL, please refer the reference paper:
