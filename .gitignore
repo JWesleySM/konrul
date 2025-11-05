@@ -1,0 +1,13 @@
+__pycache__/
+konrul/__pycache__
+verification/__pycache__
+verification/build
+verification/deps
+verification/compile_commands.json
+program_similarity/*/build
+benchmarks/*/*.bc
+benchmarks/*/candidate*
+/llvm/
+/taco/
+konrul-guesser/
+*.jscop
